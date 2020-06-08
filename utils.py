@@ -4,6 +4,7 @@ import platform
 import subprocess
 import logs
 import os
+import sys
 
 password_regex = re.compile('^.*(?=.{6,16})(?=.*\d)(?=.*[A-Z])(?=.*[a-z]{2,})(?=.*[!@#$%^&*?\(\)]).*$')
 
@@ -46,3 +47,14 @@ def exists_file(path, file):
     if file[0] == '/':
         file = file[1:]
     return os.path.exists(f"{path}/{file}")
+
+
+def abs_path_from_args(args):
+    path = args.dir
+    abs_path = None
+    if path is not None:
+        if not os.path.exists(path):
+            logs.ERROR("'%s' is not a dir!" % path)
+            sys.exit(0)
+        abs_path = os.path.abspath(path)
+    return abs_path
