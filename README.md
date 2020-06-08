@@ -25,7 +25,7 @@ NoSQL DB:
 * LevelDB [TODO]
 
 Relational DB:
-* MySQL / MariaDB [TODO]
+* [MySQL / MariaDB](#mysql--mariadb)
 * Postgres [TODO]
 
 Other DB:
@@ -42,7 +42,7 @@ Usage
 
 You can use the following command to print the help message
 ```
-$ sudo python3 main.py -h
+$ python3 main.py -h
 usage: main.py [-h] {redis} ...
 
 This is a tool for detecting configuration issues of Redis, MySQL, etc!
@@ -62,7 +62,7 @@ Redis
 -----
 [Advisory](https://redis.io/topics/security)
 ```
-$ sudo python3 main.py redis -h
+$ python3 main.py redis -h
 usage: main.py redis [-h] [--dir DIR]
 
 optional arguments:
@@ -95,7 +95,7 @@ MongoDB
 [Advisory](https://docs.mongodb.com/manual/administration/security-checklist/)
 
 ```
-$ sudo python3 main.py mongodb -h
+$ python3 main.py mongodb -h
 usage: main.py mongodb [-h] [--dir DIR] [--file FILE]
 
 optional arguments:
@@ -124,3 +124,58 @@ Checks:
 * authorization
 * js code execution
 * object check
+
+
+MySQL / MariaDB
+-----
+
+```
+$ python3 main.py mysql -h
+usage: main.py mysql [-h] [--password PASSWORD] [--username USERNAME] [--host HOST] [--port PORT]
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --password PASSWORD  Password of root account []
+  --username USERNAME  Username of root account [root]
+  --host HOST          Username of root account [127.0.0.1]
+  --port PORT          Port of MySQL server [3306]
+```
+
+An example of checking MySQL:
+```
+$ # both commands are equivalent
+$ python3 main.py mysql
+$ python3 main.py mysql --host "127.0.0.1" --port 3306 --username root --password ""
+INFO Checking authentication...
+WARNING User na3 is exposed to the internet (0.0.0.0)
+INFO Would you like to perform weak-password check? This may create high traffic load for MySQL server. (i.e. Do not perform this when there is already high traffic.)
+Type Y/y to perform this action and anything else to skip [Y]x
+WARNING User root is exposed to the internet (0.0.0.0)
+INFO Would you like to perform weak-password check? This may create high traffic load for MySQL server. (i.e. Do not perform this when there is already high traffic.)
+Type Y/y to perform this action and anything else to skip [Y]x
+WARNING User shou is exposed to the internet (0.0.0.0)
+INFO Would you like to perform weak-password check? This may create high traffic load for MySQL server. (i.e. Do not perform this when there is already high traffic.)
+Type Y/y to perform this action and anything else to skip [Y]y
+WARNING Weak password 123 set by user shou with host %
+INFO Checking obsolete accounts...
+DEBUG Obsolete account 'test' is deleted
+DEBUG Obsolete account '' is deleted
+INFO Checking useless database...
+DEBUG All useless DBs are deleted
+INFO Checking load file func...
+DEBUG --secure-file-priv is enabled
+INFO Checking global grants...
+WARNING Setting references_priv = N is for user shou with host %
+...
+DEBUG Skipping privilege checking for root/internal account
+INFO Checking database grants...
+DEBUG Skipping database privilege checking for root/internal account
+```
+Checks:
+* authentication (exposure + weak password)
+* obsolete accounts
+* useless database
+* load file func
+* global grants
+* db grants
+

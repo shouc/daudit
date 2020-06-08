@@ -203,9 +203,13 @@ class Mysql(interface.Interface):
         if self.cursor is None:
             self.connect()
         self.cursor.execute("SHOW DATABASES")
+        flag = True
         for data in self.cursor.fetchall():
             if data[0] in ["test"]:
                 logs.WARN(f"Have useless DB {data[0]}")
+                flag = False
+        if flag:
+            logs.DEBUG(f"All useless DBs are deleted")
 
     def check_conf(self):
         logs.INFO("Checking authentication...")
