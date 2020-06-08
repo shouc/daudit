@@ -1,4 +1,4 @@
-Big Data Audit
+DAudit
 ==============
 
 By [Shou C](https://github.com/shouc/)
@@ -9,8 +9,8 @@ By [Shou C](https://github.com/shouc/)
 Installation
 -----
 ```
-git clone https://github.com/shouc/BDA.git
-python3 -m pip install -r requirements.txt
+$ git clone https://github.com/shouc/daudit.git
+$ python3 -m pip install -r requirements.txt
 ```
 
 
