@@ -100,33 +100,16 @@ class Redis(interface.Interface):
 
     def check_command(self):
         rename_settings = self.config_extraction()
-        if "config" not in rename_settings:
-            logs.WARN('Config command is exposed to every user, '
-                       'consider renaming this command')
-        else:
-            if utils.check_pwd(rename_settings['config']) or rename_settings['config'] == '""':
-                logs.INFO('Config command is protected by random string')
+        for i in ["config", "debug", "shutdown", "flushdb", "flushall"]:
+            if i not in rename_settings:
+                logs.WARN(f"{i} command is exposed to every user, "
+                          f"consider renaming this command by 'rename-command {i} [UUID]'")
             else:
-                logs.WARN('Config command is not well protected by renaming '
-                           'consider to rename config command by a longer string ')
-        if "flushall" not in rename_settings:
-            logs.WARN('Flushall command is exposed to every user, '
-                       'consider renaming this command')
-        else:
-            if utils.check_pwd(rename_settings['flushall']) or rename_settings['flushall'] == '""':
-                logs.INFO('Flushall command is protected by random string')
-            else:
-                logs.WARN('Flushall command is not well protected by renaming '
-                           'consider to rename flushall command by a longer string ')
-        if "flushdb" not in rename_settings:
-            logs.WARN('Flushdb command is exposed to every user, '
-                       'consider renaming this command')
-        else:
-            if utils.check_pwd(rename_settings['flushdb']) or rename_settings['flushdb'] == '""':
-                logs.INFO('Flushdb command is protected by random string')
-            else:
-                logs.WARN('Flushdb command is not well protected by renaming '
-                           'consider to rename flushdb command by a longer string ')
+                if utils.check_pwd(rename_settings[i]) or rename_settings[i] == '""':
+                    logs.INFO('Config command is protected by random string or disabled')
+                else:
+                    logs.WARN(f'{i} command is not well protected by renaming. '
+                              f'Consider to rename {i} command by a longer string or disable it.')
 
     def check_conf(self):
         logs.INFO("Checking exposure...")
