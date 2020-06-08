@@ -49,7 +49,7 @@ class Mongodb(interface.Interface):
         try:
             with open(self.conf_file) as fp:
                 self.conf_content = yaml.load(fp, Loader=yaml.FullLoader)
-                logs.DEBUG("Using MongoDB > 2.4, with conf file in YAML")
+                logs.DEBUG("Using MongoDB > 2.4 conf file format (YAML)")
                 return True
         except yaml.parser.ParserError:
             try:
@@ -58,7 +58,7 @@ class Mongodb(interface.Interface):
             except FileNotFoundError:
                 logs.ERROR("Failed to open MongoDB conf file")
             self.is_ini = True
-            logs.DEBUG("Using MongoDB <= 2.4")
+            logs.DEBUG("Using MongoDB <= 2.4 conf file format (INI)")
             return False
         except FileNotFoundError:
             logs.ERROR("Failed to open MongoDB conf file")
