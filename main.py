@@ -39,6 +39,9 @@ def main():
                                           help=custom_args[arg])
         setting_check_parser.set_defaults(func=eval(f"__{name}"))
     args = parser.parse_args()
+    if len(args.__dict__) <= 1:
+        parser.print_help()
+        parser.exit()
     args.func(args)
 
 
