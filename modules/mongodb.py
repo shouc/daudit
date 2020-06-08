@@ -15,11 +15,11 @@ class Mongodb(interface.Interface):
         "mongodb.conf"
     ]
 
-    def __init__(self, conf_path=None, conf_file=None):
+    def __init__(self, dir=None, file=None):
         super().__init__()
-        self.conf_path = conf_path
-        self.conf_file = conf_file
-        if not conf_path:
+        self.conf_path = dir
+        self.conf_file = file
+        if not dir:
             self.conf_path = self.get_paths(files_appear=self.POSSIBLE_CONF_FILENAMES)
         if not self.conf_file:
             fs = utils.which_exist(self.conf_path, self.POSSIBLE_CONF_FILENAMES)
@@ -100,7 +100,7 @@ class Mongodb(interface.Interface):
                     logs.WARN("The instance is exposed to everyone (0.0.0.0). "
                               "Consider setting bind_ip to internal IPs")
                     continue
-                if not utils.is_ip_internal(ip):
+                if not utils.is_internal(ip):
                     logs.WARN(f"The instance is exposed on external IP: {ip}")
                     continue
                 logs.DEBUG(f"The instance is exposed on internal IP: {ip}")
@@ -131,7 +131,7 @@ class Mongodb(interface.Interface):
                     logs.WARN("The instance is exposed to everyone (0.0.0.0). "
                               "Consider setting net.bindIp to internal IPs and net.bindIpAll to false")
                     continue
-                if not utils.is_ip_internal(ip):
+                if not utils.is_internal(ip):
                     logs.WARN(f"The instance is exposed on external IP: {ip}")
                     continue
                 logs.INFO(f"The instance is exposed on internal IP: {ip}")

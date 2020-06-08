@@ -6,10 +6,10 @@ import os
 
 
 class Redis(interface.Interface):
-    def __init__(self, conf_path=None):
+    def __init__(self, dir=None):
         super().__init__()
-        self.conf_path = conf_path
-        if not conf_path:
+        self.conf_path = dir
+        if not dir:
             self.conf_path = self.get_paths(expected_file="redis.conf")
         self.conf_file = os.path.join(self.conf_path, 'redis.conf')
         logs.INFO(f"Evaluating {self.conf_file}")
@@ -77,14 +77,13 @@ class Redis(interface.Interface):
 
     def check_exposure(self):
         try:
-            ip = self.ip_extraction()[0]
-            if "127.0.0.1" == ip:
-                logs.INFO("Redis is only exposed to this computer")
-            elif utils.is_ip_internal(ip):
-                logs.INFO("Redis is only exposed to the intranet")
-            else:
-                logs.WARN("Redis is set to be exposed to the internet, "
-                          "consider setting 'bind [internal_ip]' in config file")
+            ips = self.ip_extraction()[0].split()
+            for ip in ips:
+                if not utils.is_internal(ip):
+                    logs.WARN(f"Redis is set to be exposed to the internet ({ip}), "
+                              "consider setting 'bind [internal_ip]' in config file")
+                else:
+                    logs.DEBUG(f"Redis is only exposed to internal network ({ip})")
         except IndexError:
             logs.ERROR("No IP is extracted from config file. Is the config file correct?")
 
