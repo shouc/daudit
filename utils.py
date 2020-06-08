@@ -15,12 +15,22 @@ def check_pwd(pwd: str):
     return 0
 
 
+def file_from_args(args):
+    file = args.file
+    if file is None:
+        return None
+    return file
+
+
 def is_ip_internal(ip: str):
     try:
         return ipaddress.ip_address(ip.split()[0]).is_private
     except ValueError:
         logs.DEBUG(f"Not a correct IP: {ip}")
         return False
+    except KeyError:
+        logs.DEBUG(f"No IP supplied")
+        return True
 
 
 def os_name():
@@ -60,16 +70,20 @@ def abs_path_from_args(args):
     return abs_path
 
 
-def get_ini_string(content, opt):
-    re_obj = re.compile(f"{opt} *= *(.+)")
+def get_ini_string(content, opt, default=""):
+    re_obj = re.compile(f" *(#|) *([a-zA-Z0-9-_]*) *{opt} *= *(.+)")
+    result = []
     matches = re_obj.findall(content)
-    if len(matches) == 0:
-        return False
-    return matches[-1]
+    for i in matches:
+        if not i[0] == "#" and i[1] == '':
+            result.append(i[2])
+    if len(result) == 0:
+        return default
+    return result[-1]
 
 
-def get_ini_bool(content, opt):
-    result = get_ini_string(content, opt)
+def get_ini_bool(content, opt, default="false"):
+    result = get_ini_string(content, opt, default=default)
     return result in [
         '1', 'yes', 'true', 'on'
     ]
@@ -84,3 +98,28 @@ def get_yaml(obj, opt_str):
         return result
     except KeyError:
         return None
+
+
+def get_yaml_string(obj, opt_str, default=""):
+    return get_yaml(obj, opt_str) or default
+
+
+def get_yaml_bool(obj, opt_str, default=False):
+    result = get_yaml(obj, opt_str)
+    if result is None:
+        return default
+    return result or result == "enabled"
+
+
+def split_ip(s):
+    return [
+        x.replace(" ", "") for x in s.split(",")
+    ]
+
+
+def which_exist(path, files):
+    result = []
+    for i in files:
+        if exists_file(path, i):
+            result.append(i)
+    return result
