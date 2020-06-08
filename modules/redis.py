@@ -96,7 +96,7 @@ class Redis(interface.Interface):
     def check_command(self):
         rename_settings = self.config_extraction()
         if "config" not in rename_settings:
-            logs.WARN('Config command is exposed every login user, '
+            logs.WARN('Config command is exposed to every user, '
                        'try renaming this command')
         else:
             if utils.check_pwd(rename_settings['config']) or rename_settings['config'] == '""':
@@ -105,7 +105,7 @@ class Redis(interface.Interface):
                 logs.WARN('Config command is not well protected by renaming '
                            'try to rename config command by a longer string ')
         if "flushall" not in rename_settings:
-            logs.WARN('Flushall command is exposed to every login user, '
+            logs.WARN('Flushall command is exposed to every user, '
                        'try renaming this command')
         else:
             if utils.check_pwd(rename_settings['flushall']) or rename_settings['flushall'] == '""':
@@ -114,7 +114,7 @@ class Redis(interface.Interface):
                 logs.WARN('Flushall command is not well protected by renaming '
                            'try to rename flushall command by a longer string ')
         if "flushdb" not in rename_settings:
-            logs.WARN('Flushdb command is exposed to every login user, '
+            logs.WARN('Flushdb command is exposed to every user, '
                        'try renaming this command')
         else:
             if utils.check_pwd(rename_settings['flushdb']) or rename_settings['flushdb'] == '""':
