@@ -1,7 +1,7 @@
 DAudit
 ==============
 
-By [Shou C](https://github.com/shouc/)
+Identify security risks in your configurations for databases and big data platforms.
 
 ![Output](examples/output.png)
 
