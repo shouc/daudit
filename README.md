@@ -48,9 +48,11 @@ usage: main.py [-h] {redis} ...
 This is a tool for detecting configuration issues of Redis, MySQL, etc!
 
 positional arguments:
-  {redis,mongodb}  commands
-    redis          Check configurations of redis
-    mongodb        Check configurations of mongodb
+  {redis,mongodb,mysql}
+                        commands
+    redis               Check configurations of redis
+    mongodb             Check configurations of mongodb
+    mysql               Check configurations of mysql
 
 
 optional arguments:
