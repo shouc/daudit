@@ -16,6 +16,9 @@ def __redis(args):
     r.check_conf()
 
 
+DIR_HELP = 'the dir of redis configuration files, leave blank if you' \
+       ' wish the program to automatically detect the location.'
+
 def main():
     parser = argparse.ArgumentParser(
         description="This is a tool for detecting configuration issues of Redis, MySQL, etc!")
@@ -24,8 +27,7 @@ def main():
     # Redis
     setting_check_parser = subparsers.add_parser('redis', help='Check configurations of redis')
     setting_check_parser.add_argument('--dir', dest="dir", action='store',
-                                      help='the dir of redis configuration files, leave blank if you'
-                                           'wish the program to automatically detect the location.')
+                                      help=DIR_HELP)
     setting_check_parser.set_defaults(func=__redis)
     args = parser.parse_args()
     args.func(args)

@@ -37,18 +37,18 @@ Redis
 -----
 ```
 $ sudo python3 main.py redis -h
-usage: main.py redis [-h] dir
-
-positional arguments:
-  dir         the dir of redis configuration files, leave blank if youwish the program to automatically detect the location.
+usage: main.py redis [-h] [--dir DIR]
 
 optional arguments:
   -h, --help  show this help message and exit
+  --dir DIR   the dir of redis configuration files, leave blank if you wish the program to automatically detect the location.
 ```
 
 An example of Redis with configuration dir /etc/redis
 ```
-$ sudo python3 main.py redis /etc/redis
+$ # both commands are equivalent
+$ sudo python3 main.py redis
+$ sudo python3 main.py redis /etc/redis 
 [Info]: Checking exposure...
 [Pass]: Redis is only accessible on this computer
 [Info]: Checking setting of password...
