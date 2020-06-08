@@ -9,10 +9,33 @@ By [Shou C](https://github.com/shouc/)
 Installation
 -----
 ```
-$ git clone https://github.com/shouc/daudit.git
+$ git clone https://github.com/shouc/daudit.git && cd daudit
 $ python3 -m pip install -r requirements.txt
 ```
 
+
+Supported Softwares
+-----
+NoSQL DB:
+* [Redis](#redis)
+* [MongoDB](#mongodb)
+* CouchDB [TODO]
+* Cassandra [TODO]
+* HBase [TODO]
+* LevelDB [TODO]
+
+Relational DB:
+* MySQL / MariaDB [TODO]
+* Postgres [TODO]
+
+Other DB:
+* Neo4j [TODO]
+* Elasticsearch [TODO]
+* InfluxDB [TODO]
+
+Big Data Platform:
+* Hadoop [TODO]
+* Spark [TODO]
 
 Usage
 -----
