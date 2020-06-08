@@ -100,7 +100,7 @@ class Redis(interface.Interface):
 
     def check_command(self):
         rename_settings = self.config_extraction()
-        for i in ["config", "debug", "shutdown", "flushdb", "flushall"]:
+        for i in ["config", "debug", "shutdown", "flushdb", "flushall", "eval"]:
             if i not in rename_settings:
                 logs.WARN(f"{i} command is exposed to every user, "
                           f"consider renaming this command by 'rename-command {i} [UUID]'")
