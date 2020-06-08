@@ -58,3 +58,29 @@ def abs_path_from_args(args):
             sys.exit(0)
         abs_path = os.path.abspath(path)
     return abs_path
+
+
+def get_ini_string(content, opt):
+    re_obj = re.compile(f"{opt} *= *(.+)")
+    matches = re_obj.findall(content)
+    if len(matches) == 0:
+        return False
+    return matches[-1]
+
+
+def get_ini_bool(content, opt):
+    result = get_ini_string(content, opt)
+    return result in [
+        '1', 'yes', 'true', 'on'
+    ]
+
+
+def get_yaml(obj, opt_str):
+    result = obj
+    opts = opt_str.split(".")
+    try:
+        for opt in opts:
+            result = result[opt]
+        return result
+    except KeyError:
+        return None

@@ -43,87 +43,19 @@ class MongoDB(interface.Interface):
             logs.ERROR("Failed to open MongoDB conf file")
 
     def is_auth_0(self):
-        auth_re = re.compile("auth *= *(.+)")
-        matches = auth_re.findall(self.conf_content)
-        if len(matches) == 0:
-            return False
-        return matches[-1] == "true"
+        return utils.get_ini_bool(self.conf_content, 'auth')
 
     def get_bind_ip_0(self):
-        ip_re = re.compile("bind_ip *= *(.+)")
-        matches = ip_re.findall(self.conf_content)
-        if len(matches) == 0:
-            return ""
-        return matches[-1]
+        return utils.get_ini_string(self.conf_content, 'bind_ip')
 
     def is_support_scripting_0(self):
-        ip_re = re.compile("noscripting *= *(.+)")
-        matches = ip_re.findall(self.conf_content)
-        if len(matches) == 0:
-            return False
-        return matches[-1] == True
+        return utils.get_ini_bool(self.conf_content, 'noscripting')
 
-    def config_extraction(self):
-        config_re = re.compile("((# |)rename-command (.+) (.+))")
-        temp_result = {}
-        for i in config_re.findall(self.conf_content):
-            if i[0][0] != "#":
-                temp_result[i[2].lower()] = i[3]
-        return temp_result
+    def is_obj_check_0(self):
+        return utils.get_ini_bool(self.conf_content, 'objcheck')
 
-    def check_exposure(self):
-        try:
-            ip = self.ip_extraction()[0]
-            if "127.0.0.1" == ip:
-                logs.INFO("Redis is only exposed to this computer")
-            elif utils.is_ip_internal(ip):
-                logs.INFO("Redis is only exposed to the intranet")
-            else:
-                logs.WARN("Redis is set to be exposed to the internet, "
-                          "try setting 'bind [internal_ip]' in config file")
-        except IndexError:
-            logs.ERROR("No IP is extracted from config file. Is the config file correct?")
+    def is_auth_1(self):
 
-    def check_password_setting(self):
-        if not len(self.password_extraction()):
-            logs.WARN("No password has been set, "
-                       "try setting 'requirepass [your_password]' in config file")
-            return 0
-        password = self.password_extraction()[0]
-        if utils.check_pwd(password):
-            logs.INFO('Password is strong')
-        else:
-            logs.WARN('Password is weak')
-
-    def check_command(self):
-        rename_settings = self.config_extraction()
-        if "config" not in rename_settings:
-            logs.WARN('Config command is exposed to every user, '
-                       'try renaming this command')
-        else:
-            if utils.check_pwd(rename_settings['config']) or rename_settings['config'] == '""':
-                logs.INFO('Config command is protected by random string')
-            else:
-                logs.WARN('Config command is not well protected by renaming '
-                           'try to rename config command by a longer string ')
-        if "flushall" not in rename_settings:
-            logs.WARN('Flushall command is exposed to every user, '
-                       'try renaming this command')
-        else:
-            if utils.check_pwd(rename_settings['flushall']) or rename_settings['flushall'] == '""':
-                logs.INFO('Flushall command is protected by random string')
-            else:
-                logs.WARN('Flushall command is not well protected by renaming '
-                           'try to rename flushall command by a longer string ')
-        if "flushdb" not in rename_settings:
-            logs.WARN('Flushdb command is exposed to every user, '
-                       'try renaming this command')
-        else:
-            if utils.check_pwd(rename_settings['flushdb']) or rename_settings['flushdb'] == '""':
-                logs.INFO('Flushdb command is protected by random string')
-            else:
-                logs.WARN('Flushdb command is not well protected by renaming '
-                           'try to rename flushdb command by a longer string ')
 
     def check_conf(self):
         logs.INFO("Checking exposure...")
