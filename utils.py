@@ -5,6 +5,7 @@ import subprocess
 import logs
 import os
 import sys
+import socket
 
 password_regex = re.compile('^.*(?=.{6,16})(?=.*\d)(?=.*[A-Z])(?=.*[a-z]{2,})(?=.*[!@#$%^&*?\(\)]).*$')
 
@@ -22,15 +23,48 @@ def file_from_args(args):
     return file
 
 
-def is_ip_internal(ip: str):
-    try:
-        return ipaddress.ip_address(ip.split()[0]).is_private
-    except ValueError:
-        logs.DEBUG(f"Not a correct IP: {ip}")
+def is_internal(x: str):
+    x = x.replace(" ", "")
+    is_ip_re = re.compile(r"((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}"
+                          r"|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|"
+                          r"(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)"
+                          r"(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}"
+                          r"(((:[0-9A-Fa-f]{1,4})"
+                          r"{1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|"
+                          r"(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:"
+                          r"((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|"
+                          r"(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:"
+                          r"((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|"
+                          r"(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:"
+                          r"((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|"
+                          r"(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:"
+                          r"((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))"
+                          r"|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:"
+                          r"((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))"
+                          r"(%.+)?\s*$))")
+    is_host_re = re.compile("[a-zA-Z0-9.]+")
+    if x == "0.0.0.0" or x == "::":
         return False
-    except KeyError:
-        logs.DEBUG(f"No IP supplied")
+    if is_ip_re.match(x) is not None:
+        return ipaddress.ip_address(x).is_private
+    elif is_host_re.match(x) is not None:
+        try:
+            ip = socket.gethostbyname(x)
+            return ipaddress.ip_address(ip).is_private
+        except socket.gaierror:
+            logs.ERROR(f"Unknown host: {x}")
+    elif x == "%" or x == "*":
+        return False
+    else:
+        logs.ERROR(f"Unknown host: {x}")
+
+
+def ask(c):
+    logs.INFO(c)
+    v = input("Type Y/y to perform this action and anything else to skip [Y]")
+    if v == "Y" or v == "y" or v == "":
         return True
+    return False
 
 
 def os_name():
@@ -122,4 +156,10 @@ def which_exist(path, files):
     for i in files:
         if exists_file(path, i):
             result.append(i)
+    return result
+
+
+def get_weak_passwords():
+    with open("external/weak_passwords.txt") as f:
+        result = [x.replace("\n", "") for x in f.readlines()]
     return result

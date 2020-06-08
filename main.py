@@ -5,8 +5,6 @@ import modules
 
 DIR_HELP = 'the dir of configuration files, leave blank if you' \
        ' wish the program to automatically detect it. (e.g. --dir /etc/)'
-FILE_HELP = 'the name of the configuration file, leave blank if you' \
-       ' wish the program to automatically detect it. (e.g. --file xxx.conf)'
 
 
 def main():
@@ -15,21 +13,30 @@ def main():
     subparsers = parser.add_subparsers(help='commands')
     for i in modules.SUPPORTED_DB:
         name = i["name"]
-        need_file_args = not i["is_conf_file_constant"]
+        custom_args = i["custom_args"]
+        fragment_func_args = ""
+        for arg in custom_args:
+            if arg == "--dir":
+                fragment_func_args += "dir=utils.abs_path_from_args(args),"
+                continue
+            elif arg == "--file":
+                fragment_func_args += "file=utils.file_from_args(args),"
+                continue
+            else:
+                arg = arg.replace("--", "")
+                fragment_func_args += f"{arg}=args.{arg},"
+
         exec(f"""def __{name}(args):
     from modules.{name} import {name.capitalize()}
     r = {name.capitalize()}(
-        conf_path=utils.abs_path_from_args(args),
-        {'conf_file=utils.file_from_args(args)' if need_file_args else ''}
+        {fragment_func_args}
     )
     r.check_conf()
     """)
         setting_check_parser = subparsers.add_parser(name, help=f'Check configurations of {name}')
-        setting_check_parser.add_argument('--dir', dest="dir", action='store',
-                                          help=DIR_HELP)
-        if need_file_args:
-            setting_check_parser.add_argument('--file', dest="file", action='store',
-                                              help=FILE_HELP)
+        for arg in custom_args:
+            setting_check_parser.add_argument(arg, dest=arg.replace("--", ""), action='store',
+                                          help=custom_args[arg])
         setting_check_parser.set_defaults(func=eval(f"__{name}"))
     args = parser.parse_args()
     args.func(args)
