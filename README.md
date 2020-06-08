@@ -87,7 +87,7 @@ $ # both commands are equivalent
 $ sudo python3 main.py mongodb
 $ sudo python3 main.py mongodb --dir '/etc' --file mongodb.conf 
 INFO Evaluating /etc/mongodb.conf
-DEBUG Using MongoDB <= 2.4
+DEBUG Using MongoDB <= 2.4 conf file format (INI)
 INFO Checking exposure...
 DEBUG The instance is exposed on internal IP: 127.0.0.1
 INFO Checking setting of authentication...

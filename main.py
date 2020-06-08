@@ -3,12 +3,6 @@ import utils
 import modules
 
 
-def __redis(args):
-    from modules.redis import Redis
-    r = Redis(conf_path=utils.abs_path_from_args(args))
-    r.check_conf()
-
-
 DIR_HELP = 'the dir of configuration files, leave blank if you' \
        ' wish the program to automatically detect it. (e.g. --dir /etc/)'
 FILE_HELP = 'the name of the configuration file, leave blank if you' \
