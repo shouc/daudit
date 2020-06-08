@@ -96,14 +96,10 @@ class Mongodb(interface.Interface):
             if len(ips) == 0:
                 logs.ERROR("No IP is extracted from config file. Is the config file correct?")
             for ip in ips:
-                if ip == "0.0.0.0" or ip == "::":
-                    logs.WARN("The instance is exposed to everyone (0.0.0.0). "
-                              "Consider setting bind_ip to internal IPs")
-                    continue
                 if not utils.is_internal(ip):
                     logs.WARN(f"The instance is exposed on external IP: {ip}")
                     continue
-                logs.DEBUG(f"The instance is exposed on internal IP: {ip}")
+                logs.DEBUG(f"The instance is only exposed on internal IP: {ip}")
             logs.INFO("Checking setting of authentication...")
             if not self.is_auth_0():
                 logs.WARN("No authorization is enabled in configuration file. "
@@ -116,6 +112,7 @@ class Mongodb(interface.Interface):
                           " Consider set 'noscripting = true'")
             else:
                 logs.DEBUG("JS code execution is disabled")
+            logs.INFO("Checking object check issue...")
             if not self.is_obj_check_0():
                 logs.WARN("Object check is not enabled in configuration file."
                           " Consider set 'objcheck = true'")
@@ -147,6 +144,7 @@ class Mongodb(interface.Interface):
                           " Consider set 'security.javascriptEnabled = false'")
             else:
                 logs.DEBUG("JS code execution is disabled")
+            logs.INFO("Checking object check issue...")
             if not self.is_obj_check_1():
                 logs.WARN("Object check is not enabled in configuration file."
                           " Consider set 'net.wireObjectCheck = true'")
