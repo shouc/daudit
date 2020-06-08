@@ -5,10 +5,12 @@ import argparse
 
 def __redis(args):
     path = args.dir
-    if path and not os.path.exists(path):
-        logs.ERROR("'%s' is not a dir!" % path)
-        return
-    abs_path = os.path.abspath(path)
+    abs_path = None
+    if path is not None:
+        if not os.path.exists(path):
+            logs.ERROR("'%s' is not a dir!" % path)
+            return
+        abs_path = os.path.abspath(path)
     from modules.redis import Redis
     r = Redis(conf_path=abs_path)
     r.check_conf()
@@ -21,7 +23,7 @@ def main():
 
     # Redis
     setting_check_parser = subparsers.add_parser('redis', help='Check configurations of redis')
-    setting_check_parser.add_argument('dir', action='store',
+    setting_check_parser.add_argument('--dir', dest="dir", action='store',
                                       help='the dir of redis configuration files, leave blank if you'
                                            'wish the program to automatically detect the location.')
     setting_check_parser.set_defaults(func=__redis)

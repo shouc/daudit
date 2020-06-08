@@ -10,14 +10,20 @@ class Redis(interface.Interface):
         super().__init__()
         self.conf_path = conf_path
         if not conf_path:
-            self.recognize_path()
+            self.conf_path = self.get_paths("redis.conf")
         self.conf_file = os.path.join(self.conf_path, 'redis.conf')
+        logs.INFO(f"Evaluating {self.conf_file}")
         self.conf_content = None
         self.read_content()
         self.combine_include()
 
-    def recognize_path(self):
-        self.conf_path = ""
+    def enumerate_path(self):
+        return list({
+            *utils.whereis("redis"),
+            "/etc/redis/", # apt & yum
+            "/usr/local/etc/", # homebrew
+            "/etc/", # yum
+        })
 
     def read_content(self):
         try:
@@ -73,11 +79,11 @@ class Redis(interface.Interface):
         try:
             ip = self.ip_extraction()[0]
             if "127.0.0.1" == ip:
-                logs.INFO("Redis is only accessible on this computer")
+                logs.INFO("Redis is only exposed to this computer")
             elif utils.is_ip_internal(ip):
-                logs.INFO("Redis is only accessible to internal user")
+                logs.INFO("Redis is only exposed to the intranet")
             else:
-                logs.WARN("Redis is set to be exposed to internet, "
+                logs.WARN("Redis is set to be exposed to the internet, "
                           "try setting 'bind [internal_ip]' in config file")
         except IndexError:
             logs.ERROR("No IP is extracted from config file. Is the config file correct?")
