@@ -224,7 +224,7 @@ optional arguments:
   --dir DIR    the dir of configuration files, leave blank if you wish the program to automatically detect it. (e.g. --dir /etc/)
 ```
 
-An example of checking MySQL:
+An example of checking Hadoop:
 ```
 $ # both commands are equivalent
 $ python3 main.py hadoop
