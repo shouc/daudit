@@ -64,7 +64,7 @@ class Redis(interface.Interface):
             self.conf_content += fp.read()
             fp.close()
         except FileNotFoundError:
-            logs.INFO("Include file %s cannot be found" % file_path)
+            logs.WARN("Include file %s cannot be found" % file_path)
 
     def combine_include(self):
         include_re = re.compile("((# |)include (.+).conf)")
@@ -80,8 +80,8 @@ class Redis(interface.Interface):
             ips = self.ip_extraction()[0].split()
             for ip in ips:
                 if not utils.is_internal(ip):
-                    logs.WARN(f"Redis is set to be exposed to the internet ({ip}), "
-                              "consider setting 'bind [internal_ip]' in config file")
+                    logs.ISSUE(f"Redis is set to be exposed to the internet ({ip}).")
+                    logs.RECOMMENDATION("bind [internal_ip]")
                 else:
                     logs.DEBUG(f"Redis is only exposed to internal network ({ip})")
         except IndexError:
@@ -89,27 +89,29 @@ class Redis(interface.Interface):
 
     def check_password_setting(self):
         if not len(self.password_extraction()):
-            logs.WARN("No password has been set, "
-                       "consider setting 'requirepass [your_password]' in config file")
+            logs.ISSUE("No password has been set. ")
+            logs.RECOMMENDATION("requirepass [your_password]")
+
             return 0
         password = self.password_extraction()[0]
         if utils.check_pwd(password):
-            logs.INFO('Password is strong')
+            logs.DEBUG('Password is strong')
         else:
-            logs.WARN('Password is weak')
+            logs.ISSUE('Password could be easily guessed.')
+            logs.RECOMMENDATION("requirepass [stronger passwor]")
 
     def check_command(self):
         rename_settings = self.config_extraction()
         for i in ["config", "debug", "shutdown", "flushdb", "flushall", "eval"]:
             if i not in rename_settings:
-                logs.WARN(f"{i} command is exposed to every user, "
-                          f"consider renaming this command by 'rename-command {i} [UUID]'")
+                logs.ISSUE(f"{i} command is exposed to every user.")
+                logs.RECOMMENDATION(f"rename-command {i} [UUID]")
             else:
                 if utils.check_pwd(rename_settings[i]) or rename_settings[i] == '""':
-                    logs.INFO('Config command is protected by random string or disabled')
+                    logs.DEBUG('Config command is protected by random string or disabled')
                 else:
-                    logs.WARN(f'{i} command is not well protected by renaming. '
-                              f'Consider to rename {i} command by a longer string or disable it.')
+                    logs.ISSUE(f'{i} command\' new name could be easily guessed. ')
+                    logs.RECOMMENDATION(f"rename-command {i} [UUID]")
 
     def check_conf(self):
         logs.INFO("Checking exposure...")

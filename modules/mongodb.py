@@ -97,25 +97,27 @@ class Mongodb(interface.Interface):
                 logs.ERROR("No IP is extracted from config file. Is the config file correct?")
             for ip in ips:
                 if not utils.is_internal(ip):
-                    logs.WARN(f"The instance is exposed on external IP: {ip}")
+                    logs.ISSUE(f"The instance is exposed on external IP: {ip}")
                     continue
                 logs.DEBUG(f"The instance is only exposed on internal IP: {ip}")
             logs.INFO("Checking setting of authentication...")
             if not self.is_auth_0():
-                logs.WARN("No authorization is enabled in configuration file. "
-                          "Consider set 'auth = true'")
+                logs.ISSUE("No authorization is enabled in configuration file. ")
+                logs.RECOMMENDATION("auth = true")
+
             else:
                 logs.DEBUG("Authorization is enabled but still remember to set password :)")
             logs.INFO("Checking code execution issue...")
             if not self.is_no_scripting_0():
-                logs.WARN("JS code execution is enabled in configuration file."
-                          " Consider set 'noscripting = true'")
+                logs.ISSUE("JS code execution is enabled in configuration file.")
+                logs.RECOMMENDATION("noscripting = true")
+
             else:
                 logs.DEBUG("JS code execution is disabled")
             logs.INFO("Checking object check issue...")
             if not self.is_obj_check_0():
-                logs.WARN("Object check is not enabled in configuration file."
-                          " Consider set 'objcheck = true'")
+                logs.ISSUE("Object check is not enabled in configuration file.")
+                logs.RECOMMENDATION("noscripting = true")
             else:
                 logs.DEBUG("Object check is enabled")
         else:
@@ -125,28 +127,29 @@ class Mongodb(interface.Interface):
                 logs.ERROR("No IP is extracted from config file. Is the config file correct?")
             for ip in ips:
                 if ip == "*" or ip == "0.0.0.0" or ip == "::":
-                    logs.WARN("The instance is exposed to everyone (0.0.0.0). "
-                              "Consider setting net.bindIp to internal IPs and net.bindIpAll to false")
+                    logs.ISSUE("The instance is exposed to everyone (0.0.0.0). ")
+                    logs.RECOMMENDATION("net.bindIp to internal IPs and net.bindIpAll to false")
                     continue
                 if not utils.is_internal(ip):
-                    logs.WARN(f"The instance is exposed on external IP: {ip}")
+                    logs.ISSUE(f"The instance is exposed on external IP: {ip}")
                     continue
                 logs.INFO(f"The instance is exposed on internal IP: {ip}")
             logs.INFO("Checking setting of authentication...")
             if not self.is_auth_1():
-                logs.WARN("No authorization is enabled in configuration file. "
-                          "Consider set 'security.authorization = true'")
+                logs.ISSUE("No authorization is enabled in configuration file. ")
+                logs.RECOMMENDATION("security.authorization = true")
+
             else:
                 logs.INFO("Authorization is enabled but still remember to set password :)")
             logs.INFO("Checking code execution issue...")
             if self.is_support_scripting_1():
-                logs.WARN("JS code execution is enabled in configuration file."
-                          " Consider set 'security.javascriptEnabled = false'")
+                logs.ISSUE("JS code execution is enabled in configuration file.")
+                logs.RECOMMENDATION("security.javascriptEnabled = false'")
             else:
                 logs.DEBUG("JS code execution is disabled")
             logs.INFO("Checking object check issue...")
             if not self.is_obj_check_1():
-                logs.WARN("Object check is not enabled in configuration file."
-                          " Consider set 'net.wireObjectCheck = true'")
+                logs.ISSUE("Object check is not enabled in configuration file.")
+                logs.RECOMMENDATION("net.wireObjectCheck = true")
             else:
                 logs.DEBUG("Object check is enabled")

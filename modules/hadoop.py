@@ -63,14 +63,13 @@ class Hadoop(interface.Interface):
         logs.INFO("Checking global access control")
         auth_method = utils.get_item_from_obj(self.conf_obj, "hadoop.security.authentication", default="simple")
         if auth_method == "simple":
-            logs.WARN("Everyone can access the instance")
-            logs.RECOMMENDATION("Consider setting property hadoop.security.authentication = kerberos")
+            logs.ISSUE("Everyone can access the instance")
+            logs.RECOMMENDATION("hadoop.security.authentication = kerberos")
         else:
             logs.DEBUG(f"Authentication method [{auth_method}] enabled")
         if utils.get_item_from_obj(self.conf_obj, "hadoop.security.authorization", default="false") == "false":
-            logs.WARN("Authorization is not enabled")
-            logs.RECOMMENDATION("Consider setting property hadoop.security.authorization = true based on the context. "
-                                "This can increase granularity for access control. ")
+            logs.ISSUE("Authorization is not enabled")
+            logs.RECOMMENDATION("hadoop.security.authorization = true")
         else:
             logs.DEBUG("Authorization enabled")
 
@@ -78,13 +77,12 @@ class Hadoop(interface.Interface):
         logs.INFO("Checking web portal access control")
         auth_method = utils.get_item_from_obj(self.conf_obj, "hadoop.http.authentication.type", default="simple")
         if auth_method == "simple":
-            logs.WARN("Everyone can access the web portal")
-            logs.RECOMMENDATION("Consider setting property hadoop.http.authentication.type = kerberos")
+            logs.ISSUE("Everyone can access the web portal")
+            logs.RECOMMENDATION("hadoop.http.authentication.type = kerberos")
             if utils.get_item_from_obj(self.conf_obj, "hadoop.http.authentication.simple.anonymous.allowed",
                                        default="true") == "true":
-                logs.WARN("Anonymous is allowed to access web portal.")
-                logs.RECOMMENDATION("Consider setting property "
-                                    "hadoop.http.authentication.simple.anonymous.allowed = false")
+                logs.ISSUE("Anonymous is allowed to access web portal.")
+                logs.RECOMMENDATION("hadoop.http.authentication.simple.anonymous.allowed = false")
         else:
             logs.DEBUG(f"Authentication method [{auth_method}] enabled")
 
@@ -98,8 +96,8 @@ class Hadoop(interface.Interface):
                                        default="true")
             )
             if "*" in allowed_origins:
-                logs.WARN("Cross origin is wildcard.")
-                logs.RECOMMENDATION("Consider qualify it based on the context.")
+                logs.ISSUE("Cross origin is wildcard.")
+                logs.RECOMMENDATION(" / qualify hadoop.http.cross-origin.allowed-origins")
             else:
                 logs.DEBUG(f"CORS is enabled but only allowed to {','.join(allowed_origins)}")
         else:
@@ -110,8 +108,8 @@ class Hadoop(interface.Interface):
 
         if utils.get_item_from_obj(self.conf_obj, "hadoop.ssl.enabled",
                                    default="false") == "false":
-            logs.WARN("SSL is disabled.")
-            logs.RECOMMENDATION("Consider config SSL in core-site.xml.")
+            logs.ISSUE("SSL is disabled.")
+            logs.RECOMMENDATION("hadoop.ssl.enabled = true")
         else:
             logs.DEBUG("SSL is enabled.")
 
@@ -120,8 +118,8 @@ class Hadoop(interface.Interface):
 
         allowed_hosts = utils.get_item_from_obj(self.conf_obj, "nfs.exports.allowed.hosts", default="* rw")
         if allowed_hosts == "* rw":
-            logs.WARN("NFS is exposed to internet for read and write.")
-            logs.RECOMMENDATION("Consider qualify nfs.exports.allowed.hosts.")
+            logs.ISSUE("NFS is exposed to internet for read and write.")
+            logs.RECOMMENDATION(" / qualify nfs.exports.allowed.hosts")
         else:
             logs.DEBUG(f"NFS host priv: {allowed_hosts}. Evaluate based on the context.")
 
@@ -130,8 +128,8 @@ class Hadoop(interface.Interface):
 
         if utils.get_item_from_obj(self.conf_obj, "hadoop.registry.rm.enabled", default="false") == "true":
             if  utils.get_item_from_obj(self.conf_obj, "hadoop.registry.secure", default="false") == "false":
-                logs.WARN("registry.secure is not enabled. ")
-                logs.RECOMMENDATION("Consider setting hadoop.registry.secure = true based on context. ")
+                logs.ISSUE("registry.secure is not enabled. ")
+                logs.RECOMMENDATION("hadoop.registry.secure = true")
             else:
                 logs.DEBUG(f"Registry security is enabled.")
         else:
@@ -141,15 +139,14 @@ class Hadoop(interface.Interface):
         logs.INFO("Checking hdfs permission")
         if utils.get_item_from_obj(self.conf_obj, "dfs.permissions.enabled",
                                    default="true") == "false":
-            logs.WARN("HDFS does not have access control. Everyone could conduct CURD operations on the instance.")
-            logs.RECOMMENDATION("Consider setting dfs.permissions.enabled = true")
+            logs.ISSUE("HDFS does not have access control. Everyone could conduct CURD operations on the instance.")
+            logs.RECOMMENDATION("dfs.permissions.enabled = true")
         else:
             logs.DEBUG("HDFS permission system is enabled.")
         if utils.get_item_from_obj(self.conf_obj, "dfs.namenode.acls.enabled",
                                    default="false") == "false":
-            logs.WARN("HDFS ACLs is not enabled.")
-            logs.RECOMMENDATION("Consider setting dfs.namenode.acls.enabled = true to increase granularity"
-                                " of control based on context.")
+            logs.ISSUE("HDFS ACLs is not enabled.")
+            logs.RECOMMENDATION("dfs.namenode.acls.enabled = true")
         else:
             logs.DEBUG("HDFS ACLs is enabled.")
 
