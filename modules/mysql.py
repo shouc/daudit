@@ -225,3 +225,6 @@ class Mysql(interface.Interface):
         logs.INFO("Checking database grants...")
         self.test_db_grants()
 
+    def __del__(self):
+        if self.conn is not None:
+            self.conn.close()

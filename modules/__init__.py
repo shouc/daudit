@@ -17,5 +17,7 @@ SUPPORTED_DB = [{
         "--host": "Username of root account [127.0.0.1]",
         "--port": "Port of MySQL server [3306]",
     }
-}
-]
+}, {
+    "name": "hadoop",
+    "custom_args": {"--dir": DIR_HELP},
+}]

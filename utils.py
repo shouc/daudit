@@ -163,3 +163,10 @@ def get_weak_passwords():
     with open("external/weak_passwords.txt") as f:
         result = [x.replace("\n", "") for x in f.readlines()]
     return result
+
+
+def get_item_from_obj(obj, key, default=""):
+    try:
+        return obj[key]
+    except KeyError:
+        return default
