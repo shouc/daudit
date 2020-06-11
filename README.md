@@ -53,17 +53,18 @@ $ python3 main.py -h
       https://github.com/shouc/daudit
 ==============================================
 
-usage: main.py [-h] {redis} ...
+usage: main.py [-h] {redis,mongodb,mysql,hadoop,spark} ...
 
 This is a tool for detecting configuration issues of Redis, MySQL, etc!
 
 positional arguments:
-  {redis,mongodb,mysql,hadoop}
+  {redis,mongodb,mysql,hadoop,spark}
                         commands
     redis               Check configurations of redis
     mongodb             Check configurations of mongodb
     mysql               Check configurations of mysql
     hadoop              Check configurations of hadoop
+    spark               Check configurations of spark
 
 optional arguments:
   -h, --help  show this help message and exit
@@ -265,3 +266,56 @@ Checks:
 * registry access control
 * hdfs access control
 * hdfs exposure
+
+Spark
+-----
+[Advisory](https://spark.apache.org/docs/latest/security.html)
+```
+$ python3 main.py spark -h
+usage: main.py spark [-h] [--file FILE]
+
+optional arguments:
+  -h, --help   show this help message and exit
+  --file FILE  the name of the configuration file, leave blank if you wish the program to automatically detect it. (e.g. --file /etc/xxx.conf)
+```
+
+An example of checking Spark:
+```
+$ # both commands are equivalent
+$ python3 main.py spark
+$ python3 main.py spark --file "/etc/spark/spark-defaults.conf"
+[INFO]    Assuming no configuration property has been changed by CLI or SparkConf object
+[INFO]    Evaluating file /etc/spark/spark-defaults.conf
+[INFO]    Checking ACL
+[ISSUE]   Access control not enabled for web portal
+[RECOMM]  Consider setting spark.acls.enable = true in configuration file(s) based on your context.
+[ISSUE]   Access control not enabled for history server
+[RECOMM]  Consider setting spark.history.ui.acls.enable = true in configuration file(s) based on your context.
+[INFO]    Checking XSS
+[DEBUG]   XSS protection is enabled
+[DEBUG]   CORB protection is enabled
+[INFO]    Checking SSL
+[ISSUE]   SSL is not enabled
+[RECOMM]  Consider setting spark.ssl.enable = true in configuration file(s) based on your context.
+[INFO]    Checking encryption
+[ISSUE]   Network encryption is not enabled
+[RECOMM]  Consider setting spark.network.crypto.enable = true in configuration file(s) based on your context.
+[ISSUE]   Disk encryption is not enabled
+[RECOMM]  Consider setting spark.io.encryption.enable = true in configuration file(s) based on your context.
+[INFO]    Checking web ui authentication
+[ISSUE]   Everyone can visit the instance
+[RECOMM]  Consider setting spark.authenticate = true in configuration file(s) based on your context.
+[INFO]    Checking logging
+[ISSUE]   Logging is not enabled
+[RECOMM]  Consider setting spark.eventLog.enabled = true in configuration file(s) based on your context.
+```
+Checks:
+* ACL
+* XSS protection 
+* CORB protection 
+* SSL
+* network encryption
+* disk encryption
+* web ui authentication
+* logging
+
