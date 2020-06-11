@@ -1,6 +1,5 @@
 import interface
 import logs
-import re
 import utils
 import os
 import yaml
@@ -15,24 +14,21 @@ class Mongodb(interface.Interface):
         "mongodb.conf"
     ]
 
-    def __init__(self, dir=None, file=None):
+    def __init__(self, file=None):
         super().__init__()
-        self.conf_path = dir
         self.conf_file = file
-        if not dir:
-            self.conf_path = self.get_paths(files_appear=self.POSSIBLE_CONF_FILENAMES)
         if not self.conf_file:
-            fs = utils.which_exist(self.conf_path, self.POSSIBLE_CONF_FILENAMES)
+            conf_path = self.get_paths(files_appear=self.POSSIBLE_CONF_FILENAMES)
+            fs = utils.which_exist(conf_path, self.POSSIBLE_CONF_FILENAMES)
             if len(fs) == 0:
                 logs.ERROR("Cannot find the configuration file in given configuration path, "
-                           "please specify (e.g. --file=mongod.conf!)")
+                           "please specify (e.g. --file=/etc/mongod.conf!)")
                 sys.exit(0)
             if len(fs) > 1:
                 logs.ERROR("Multiple configuration file in configuration path found (listed below), "
-                           "please specify  (e.g. --file=mongod.conf)")
+                           "please specify  (e.g. --file=/etc/mongod.conf)")
                 sys.exit(0)
-            self.conf_file = fs[0]
-        self.conf_file = os.path.join(self.conf_path, self.conf_file)
+            self.conf_file = os.path.join(conf_path, fs[0])
         logs.INFO(f"Evaluating {self.conf_file}")
         self.conf_content = None
         self.is_ini = False
