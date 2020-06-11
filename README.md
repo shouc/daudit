@@ -35,7 +35,7 @@ Other DB:
 
 Big Data Platform:
 * [Hadoop](#hadoop)
-* Spark [TODO]
+* [Spark](#spark)
 
 Usage
 -----
