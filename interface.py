@@ -36,7 +36,7 @@ class Interface(object):
                 continue
             result.append(path)
         if len(result) == 0:
-            logs.ERROR("Cannot find configuration file location, please specify (e.g. --dir=/etc)")
+            logs.ERROR("Cannot find configuration file location, please specify")
             sys.exit(0)
         if len(result) > 1:
             logs.ERROR("Multiple configuration file locations found (listed below), "

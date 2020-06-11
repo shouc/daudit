@@ -1,5 +1,5 @@
 FILE_HELP = 'the name of the configuration file, leave blank if you' \
-       ' wish the program to automatically detect it. (e.g. --file xxx.conf)'
+       ' wish the program to automatically detect it. (e.g. --file /etc/xxx.conf)'
 DIR_HELP = 'the dir of configuration files, leave blank if you' \
        ' wish the program to automatically detect it. (e.g. --dir /etc/)'
 
@@ -20,4 +20,7 @@ SUPPORTED_DB = [{
 }, {
     "name": "hadoop",
     "custom_args": {"--dir": DIR_HELP},
+}, {
+    "name": "spark",
+    "custom_args": {"--file": FILE_HELP},
 }]
