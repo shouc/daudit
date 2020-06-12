@@ -1,10 +1,10 @@
+# Copyright: [DAudit] - See LICENSE for details.
+# Authors: Shou Chaofan (@shouc),
 import interface
 import logs
-import re
 import utils
 import os
 import xml.etree.ElementTree
-import collections
 import sys
 
 

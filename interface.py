@@ -1,4 +1,5 @@
-import os
+# Copyright: [DAudit] - See LICENSE for details.
+# Authors: Shou Chaofan (@shouc),
 import logs
 import utils
 import sys

@@ -1,3 +1,5 @@
+# Copyright: [DAudit] - See LICENSE for details.
+# Authors: Shou Chaofan (@shouc),
 import interface
 import logs
 import re
@@ -107,7 +109,7 @@ class Redis(interface.Interface):
                 logs.ISSUE(f"{i} command is exposed to every user.")
                 logs.RECOMMENDATION(f"rename-command {i} [UUID]")
             else:
-                if utils.check_pwd(rename_settings[i]) or rename_settings[i] == '""':
+                if utils.check_normal_pwd(rename_settings[i]) or rename_settings[i] == '""':
                     logs.DEBUG('Config command is protected by random string or disabled')
                 else:
                     logs.ISSUE(f'{i} command\' new name could be easily guessed. ')

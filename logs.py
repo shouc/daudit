@@ -1,3 +1,5 @@
+# Copyright: [DAudit] - See LICENSE for details.
+# Authors: Shou Chaofan (@shouc),
 class Colors:
     HEADER = '\033[35m'
     BLUE = '\033[34m'

@@ -1,3 +1,5 @@
+# Copyright: [DAudit] - See LICENSE for details.
+# Authors: Shou Chaofan (@shouc),
 import re
 import ipaddress
 import platform
@@ -14,6 +16,10 @@ def check_pwd(pwd: str):
     if password_regex.match(pwd):
         return 1
     return 0
+
+
+def check_normal_pwd(pwd: str):
+    return len(pwd) > 16
 
 
 def file_from_args(args):

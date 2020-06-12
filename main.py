@@ -1,7 +1,8 @@
+# Copyright: [DAudit] - See LICENSE for details.
+# Authors: Shou Chaofan (@shouc),
 import argparse
-import utils
 import modules
-
+import utils
 
 DIR_HELP = 'the dir of configuration files, leave blank if you' \
        ' wish the program to automatically detect it. (e.g. --dir /etc/)'
